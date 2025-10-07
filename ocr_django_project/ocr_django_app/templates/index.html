@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwritten OCR - Django</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f5f5f5; }
+        .container { margin-top: 50px; }
+        .card { border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .image-box, .text-box { padding: 20px; }
+        img { max-width: 100%; border-radius: 10px; }
+        textarea { width: 100%; height: 96%; border: none; outline: none; resize: none; background: #fafafa; }
+        .btn-copy { background-color: #007bff; color: white; border: none; padding: 8px 12px; border-radius: 6px; }
+        .btn-download { background-color: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 6px; }
+        .btn-copy:hover, .btn-download:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h2 class="mb-4">📝 Handwritten Image to Text Converter (Django)</h2>
+
+        <form method="POST" enctype="multipart/form-data" class="mb-4">
+            {% csrf_token %}
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit" class="btn btn-primary ms-2">Upload & Extract</button>
+        </form>
+
+        <div class="row">
+            <div class="col-md-6 image-box card">
+                <h5>Uploaded Image</h5>
+                {% if image_url %}
+                    <img src="{{ image_url }}" alt="Uploaded Image">
+                {% else %}
+                    <p class="text-muted">No image uploaded yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6 text-box card">
+                <h5>Extracted Text</h5>
+                <textarea id="extractedText" readonly>{{ extracted_text }}</textarea>
+                <div class="mt-3">
+                    <button class="btn-copy" onclick="copyText()">Copy Text</button>
+                    {% if extracted_text %}
+                    <a href="{% url 'download_pdf' %}" class="btn-download ms-2">Download PDF</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyText() {
+            const textArea = document.getElementById("extractedText");
+            textArea.select();
+            textArea.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            alert("Text copied to clipboard!");
+        }
+    </script>
+</body>
+</html>
